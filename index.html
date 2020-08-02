@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Generator</title>
+    <link rel="icon" href="https://www.google.com/s2/favicons?domain=udemy.com" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main quote container -->
+    <div class="quote-container" id="quote-container">
+
+        <!-- Quote Content -->
+        <div class="quote-content-container" id="quote-content-container">
+            <i class="fas fa-quote-left"></i>
+            <span class="quote-content" id="quote-content">
+            </span>
+        </div>
+
+        <!-- Quote Author -->
+        <div class="quote-author-container" id="quote-author-container">
+            <span class="quote-author" id="quote-author">
+            </span>
+        </div>
+        <div class="button-container" id="button-container">
+            <button class="tweet-quote" id="tweet-quote" title="Tweet this!">
+                <i class="fab fa-twitter"></i>
+            </button>
+            <button class="new-quote" id="new-quote">
+                New Quote
+            </button>
+        </div>
+    </div>
+
+    <!-- Loader component -->
+    <div class="loader" id="loader">
+
+    </div>
+
+    <!-- Script -->
+    <script src="script.js"></script>
+</body>
+</html>
