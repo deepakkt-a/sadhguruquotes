@@ -8,7 +8,12 @@ const quoteText = document.getElementById('quote-content');
 const quoteAuthor = document.getElementById('quote-author');
 const tweetButton = document.getElementById("tweet-quote");
 const newQuotebutton = document.getElementById("new-quote");
-const loader = document.getElementById("loader")
+const loader = document.getElementById("loader");
+
+const useProxy = false;
+const proxyURL = "https://cors-everywhere.herokuapp.com/";
+
+var quoteListArray = [];
 
 // Load spinner
 function loading() {
@@ -27,21 +32,42 @@ function loadComplete() {
 // control quote generator constants
 const longQuoteLimit = 120;
 
-// actual get quote function
-async function getQuote() {
+// initial load
+async function initialLoader() {
     loading();
 
-    const proxyURL = "https://cors-everywhere.herokuapp.com/";
-    const apiURL = proxyURL + "https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json";
+    // this is the third party quoting service
+    // var apiURL = "https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json";
+    var apiURL = "quotes-en-1.json"
+
+    if (useProxy) {
+        apiURL = proxyURL + apiURL;
+    }
 
     try {
         const response = await fetch(apiURL);
-        const data = await response.json();
-        refreshQuoteContent(data);
+        const data = await response.text();
+
+        parseQuoteData(data);
+        let newQuote = getRandomQuote();
+        refreshQuoteContent(newQuote);
         loadComplete();
     } catch (error) {
-        getQuote();
+        console.log("Something bad happened and this load is doomed!", error)
     }
+}
+
+function parseQuoteData(quotes) {
+    quoteList = quotes.split("\n");
+
+    for(i = 0; i < quoteList.length; i++) {
+        if (quoteList[i] !== "") {
+            quoteJSON = JSON.parse(quoteList[i]);
+            quoteListArray.push(quoteJSON);
+        }
+    }
+
+    console.log(quoteListArray);
 }
 
 function refreshQuoteContent(quote) {
@@ -63,6 +89,23 @@ function refreshQuoteContent(quote) {
     quoteText.innerText = quote.quoteText;
 }
 
+
+// get a random quote from array
+function getRandomQuote() {
+    var randomSeed = getRndInteger(0, quoteListArray.length - 1);
+
+    return quoteListArray[randomSeed];
+}
+
+async function loadNewQuote() {
+    loading();
+    let waitNS = getRndInteger(1000, 2000);
+    await new Promise(r => setTimeout(r, waitNS));
+    newQuote = getRandomQuote();
+    refreshQuoteContent(newQuote);
+    loadComplete();
+}
+
 // tweet quote on Twitter button click
 function tweetQuote() {
     const twitterURL = "https://twitter.com/intent/tweet";
@@ -74,9 +117,14 @@ function tweetQuote() {
     window.open(finalURL, "_blank");
 }
 
+// generate a random number between min and max
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+}
+
 // add event listeners to buttons
 tweetButton.addEventListener("click", tweetQuote);
-newQuotebutton.addEventListener("click", getQuote);
+newQuotebutton.addEventListener("click", loadNewQuote);
 
 // On page load
-getQuote()
+initialLoader()
